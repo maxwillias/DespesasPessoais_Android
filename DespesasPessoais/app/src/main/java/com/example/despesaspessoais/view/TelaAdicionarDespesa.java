@@ -3,22 +3,20 @@ package com.example.despesaspessoais.view;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.despesaspessoais.R;
-import com.example.despesaspessoais.dao.BancoDadosHelper;
 import com.example.despesaspessoais.dao.DespesaDAO;
 import com.example.despesaspessoais.entidade.Despesa;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 public class TelaAdicionarDespesa extends AppCompatActivity implements View.OnClickListener {
@@ -55,7 +53,7 @@ public class TelaAdicionarDespesa extends AppCompatActivity implements View.OnCl
         btnSelecionarData.setOnClickListener(this);
     }
 
-    public void configurarDatePicker(){
+    private void configurarDatePicker(){
         MaterialDatePicker.Builder builder = MaterialDatePicker.Builder.datePicker();
         builder.setTitleText("Selecione uma data");
         MaterialDatePicker materialDatePicker = builder.build();
@@ -71,7 +69,7 @@ public class TelaAdicionarDespesa extends AppCompatActivity implements View.OnCl
         });
     }
 
-    public void salvarDados(){
+    private void salvarDados(){
         despesa.setNome(txtNome.getText().toString());
         despesa.setValor(Float.parseFloat(txtValor.getText().toString()));
         try {
@@ -82,11 +80,35 @@ public class TelaAdicionarDespesa extends AppCompatActivity implements View.OnCl
         }
     }
 
+    public boolean dadosValidos(){
+        boolean dadosValidos = true;
+
+        if(TextUtils.isEmpty(txtNome.getText().toString())){
+            txtNome.setError("Insira o nome da Despesa!");
+            txtNome.requestFocus();
+            dadosValidos = false;
+        }
+        if(TextUtils.isEmpty(txtValor.getText().toString())){
+            txtValor.setError("Insira o valor da Despesa!");
+            txtValor.requestFocus();
+            dadosValidos = false;
+        }
+//        if(TextUtils.isEmpty(txtData.getText().toString())){
+//            txtData.setError("Insira uma data valida!");
+//            dadosValidos = false;
+//        }
+        return dadosValidos;
+    }
+
     @Override
     public void onClick(View view) {
         if(view.equals(btnSalvar)){
-            salvarDados();
-            this.finish();
+            if(dadosValidos()) {
+                salvarDados();
+                this.finish();
+            }else {
+                Toast.makeText(getApplicationContext(), "Preencha os Dados Corretamente!", Toast.LENGTH_SHORT).show();
+            }
         }else if(view.equals(btnVoltar)) {
             this.finish();
         }else if(view.equals(btnSelecionarData)){
